@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import CustomerHeaders from "../_components/CustomerHeaders";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [orderData, setOrderData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   const fetchOrders = async (userId) => {
     try {
       const response = await fetch(`/api/order?id=${userId}`, {
@@ -35,6 +36,8 @@ const ProfilePage = () => {
     if (storedUser) {
       setUser(storedUser);
       fetchOrders(storedUser?._id);
+    }else{
+      router.push("/");
     }
   }, []);
 
