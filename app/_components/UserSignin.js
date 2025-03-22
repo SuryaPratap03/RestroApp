@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const UserSignin = ({ setIsSignup,redirect }) => {
+const UserSignin = ({ setIsSignup, redirect }) => {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -61,9 +61,9 @@ const UserSignin = ({ setIsSignup,redirect }) => {
         if (data.success) {
           toast.success(data.message);
           localStorage.setItem("user", JSON.stringify(data.result));
-          if(redirect){
+          if (redirect) {
             router.push('/cart');
-          }else{
+          } else {
             router.push("/");
           }
         } else {
@@ -144,7 +144,7 @@ const UserSignin = ({ setIsSignup,redirect }) => {
               onClick={() => setIsSignup(true)}
               className="text-green-600 hover:underline text-sm cursor-pointer"
             >
-              Don't have an account? Sign Up
+              Don&apos;t have an account? Sign Up
             </div>
           </div>
         </form>

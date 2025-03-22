@@ -75,7 +75,6 @@ const DeliveryPartnerLogin = ({ setIsLoggedIn }) => {
         toast.error(data.message || "Invalid credentials.");
       }
     } catch (error) {
-    //   toast.error("Failed to connect to the server. Please try again.");
       console.error("API Error:", error);
     } finally {
       setLoading(false);
@@ -84,7 +83,7 @@ const DeliveryPartnerLogin = ({ setIsLoggedIn }) => {
 
   return (
     <div>
-        <DeliveryHeader />
+      <DeliveryHeader />
       <div className="min-h-screen flex justify-center items-center bg-gray-100">
         <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
           <h2 className="text-3xl font-bold text-green-700 text-center mb-6">
@@ -177,7 +176,7 @@ const DeliveryPartnerLogin = ({ setIsLoggedIn }) => {
           {/* Register Link */}
           <div className="text-center mt-4">
             <div className="text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <div
                 onClick={() => setIsLoggedIn(false)}
                 className="text-green-600 hover:underline cursor-pointer"

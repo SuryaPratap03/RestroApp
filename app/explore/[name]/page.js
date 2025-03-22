@@ -159,7 +159,7 @@ const Page = (props) => {
                 No Food Items Available
               </h3>
               <p className="text-lg text-gray-500 mt-4">
-                We're currently out of stock. Check back later for delicious
+                We&apos;re currently out of stock. Check back later for delicious
                 updates!
               </p>
             </div>
