@@ -1,103 +1,209 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState, useRef } from "react";
+import CustomerHeaders from "./_components/CustomerHeaders";
+import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [availableLocations, setAvailableLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [city, setCity] = useState("");
+  const [restaurant, setRestaurant] = useState("");
+  const [allRestaurants, setAllRestaurants] = useState([]);
+  const [restaurants,setRestaurants] = useState([]);
+  const suggestionsRef = useRef(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const loadRestaurants = async () => {
+    let response = await fetch(`/api/customer?location=${city}&restaurant=${restaurant}`);
+    let data = await response.json();
+    console.log("Restaurant Data", data);
+    if (data?.success) {
+      setAllRestaurants(data?.result);
+      setRestaurants(data?.result);
+    }
+  };
+  const router = useRouter();
+  useEffect(()=>{
+    
+    if(restaurant.length>3){
+      loadRestaurants();
+    } 
+    else if(city.length>3){
+      loadRestaurants();
+    }
+    else if(restaurant.length==0 || city.length==0){
+      loadRestaurants();
+    }
+  },[restaurant,city])
+  const loadLocations = async () => {
+    const response = await fetch("/api/customer/locations");
+    const data = await response.json();
+
+    if (data?.success) {
+      setAvailableLocations(data?.result);
+    }
+  };
+
+  useEffect(() => {
+    loadLocations();
+    loadRestaurants();
+
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleCityChange = (e) => {
+    const value = e.target.value;
+    setCity(value);
+
+    if (value.trim()) {
+      const filtered = availableLocations.filter((location) =>
+        location.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredLocations(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleRestaurantChange = (e) => {
+    setRestaurant(e.target.value);
+  };
+
+  const handleSuggestionClick = (location) => {
+    setCity(location);
+    setShowSuggestions(false);
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <CustomerHeaders />
+
+      {/* Search Section */}
+      <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-br from-green-500 to-green-600">
+        <div className="bg-white p-10 rounded-xl shadow-2xl w-full max-w-2xl">
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+            Find Your Favorite Dish
+          </h1>
+
+          {/* Search Inputs */}
+          <div className="relative flex">
+            {/* City Input with Suggestions */}
+            <div className="relative w-1/3" ref={suggestionsRef}>
+              <input
+                type="text"
+                placeholder="Enter City"
+                value={city}
+                onChange={handleCityChange}
+                onFocus={() => setShowSuggestions(true)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              />
+
+              {/* Suggestions Dropdown */}
+              {showSuggestions && (
+                <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-48 overflow-y-auto">
+                  {filteredLocations.length > 0 ? (
+                    filteredLocations.map((location, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSuggestionClick(location)}
+                        className="px-4 py-2 hover:bg-green-100 cursor-pointer transition"
+                      >
+                        {location}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">No results found</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Dish Input */}
+            <input
+              type="text"
+              placeholder="Enter Dish Name"
+              value={restaurant}
+              onChange={handleRestaurantChange}
+              className="w-2/3 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition -ml-px rounded-r-full"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Restaurant Cards Section */}
+      <div className="container mx-auto my-10 px-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Available Restaurants
+        </h2>
+
+        {allRestaurants?.length === 0 ? (
+          <p className="text-gray-600 text-center">No restaurants found.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allRestaurants.map((restaurant, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-lg overflow-hidden transition transform hover:scale-105"
+              >
+                <div className="p-6">
+                  {/* Restaurant Name */}
+                  <h3 className="text-2xl font-bold text-green-700 mb-2">
+                    {restaurant.restaurantName}
+                  </h3>
+
+                  {/* Location */}
+                  <div className="flex items-center text-gray-700">
+                    <FaMapMarkerAlt className="text-red-500 mr-2" />
+                    <span>{restaurant.city}</span>
+                  </div>
+
+                  {/* Address */}
+                  <div className="flex items-center text-gray-600 mt-1">
+                    <FaMapMarkerAlt className="text-blue-500 mr-2" />
+                    <span>{restaurant.address}</span>
+                  </div>
+
+                  {/* Phone Number */}
+                  <div className="flex items-center text-gray-600 mt-1">
+                    <FaPhone className="text-green-500 mr-2" />
+                    <span>{restaurant.phoneNumber}</span>
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex items-center text-gray-600 mt-1">
+                    <FaEnvelope className="text-orange-500 mr-2" />
+                    <span>{restaurant.email}</span>
+                  </div>
+
+                  {/* Hover Button */}
+                  <div className="mt-4">
+                    <button 
+                    className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition"
+                    onClick={()=>{
+                      router.push(`/explore/${restaurant.restaurantName +"?id=" + restaurant._id}`);
+                    }}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

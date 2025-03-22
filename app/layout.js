@@ -1,5 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "./_components/Footer";
+import { Toaster } from "react-hot-toast";
+import { Provider } from "react-redux";
+import { store } from "./store/store";  // ✅ Correct import
+import ReduxProvider from "./ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +27,37 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ReduxProvider>  
+          <Toaster
+            toastOptions={{
+              style: {
+                fontSize: "18px",         // ✅ Larger text
+                padding: "20px",          // ✅ More padding
+                minWidth: "400px",        // ✅ Wider toast
+                minHeight: "100px",       // ✅ Taller toast
+                borderRadius: "12px",     // ✅ Rounded corners
+                boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)", // ✅ Enhanced shadow
+              },
+              success: {
+                icon: (
+                  <span
+                    style={{
+                      fontSize: "32px",           // ✅ Large tick icon
+                      color: "green",             // ✅ Green color
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ✔️
+                  </span>
+                ),
+              }
+            }}
+            position="top-right"
+            reverseOrder={true}
+          />
+          {children}
+          <Footer />
+        </ReduxProvider>
       </body>
     </html>
   );
