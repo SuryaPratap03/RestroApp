@@ -1,28 +1,27 @@
-"use client"
+"use client";
 import Link from "next/link";
-import { useRouter,usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { clearCart } from "../features/cartSlice";
+
 const RestaurantHeader = () => {
-  const [details,setDetails] = useState(null);
+  const [details, setDetails] = useState(null);
   const router = useRouter();
-  const pathname = usePathname()
-  
-  useEffect(()=>{
-    const user = JSON.parse(localStorage.getItem('restaurantUser'));
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("restaurantUser"));
     setDetails(user);
-    
-  if(user){
-    if(pathname == '/restaurant'){
-      router.push('/restaurant/dashboard')
+
+    if (user && pathname === "/restaurant") {
+      router.push("/restaurant/dashboard");
     }
-  }
-  },[])
-  const handleLogout=()=>{
-    localStorage.removeItem('restaurantUser');
-    router.push('/restaurant')
-  }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("restaurantUser");
+    router.push("/restaurant");
+  };
+
   return (
     <header className="bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
       {/* Logo */}
@@ -44,25 +43,33 @@ const RestaurantHeader = () => {
             </Link>
           </li>
 
-          {details ?
-          <> 
-          <li>
-            <Link href="/" className="hover:text-green-500 transition">
-              Profile
-            </Link>
-          </li>
-          <li>
-            <Link href="/restaurant" className="hover:text-green-500 transition" onClick={handleLogout}>
-              Logout
-            </Link>
-          </li>
-          </> :
-          <li>
-            <Link href="/" className="hover:text-green-500 transition">
-              Login / Signup
-            </Link>
-          </li>
-          }
+          {details ? (
+            <>
+              {/* ✅ Hide "Profile" on mobile */}
+              <li className="hidden md:block">
+                <Link href="/restaurant/dashboard" className="hover:text-green-500 transition">
+                  Profile
+                </Link>
+              </li>
+
+              {/* ✅ Hide "Logout" on mobile */}
+              <li className="hidden md:block">
+                <Link
+                  href="/restaurant"
+                  className="hover:text-green-500 transition"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Link>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link href="/" className="hover:text-green-500 transition">
+                Login / Signup
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

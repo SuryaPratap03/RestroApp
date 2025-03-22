@@ -49,11 +49,13 @@ const DeliveryHeader = () => {
 
       <nav>
         <ul className="flex space-x-6 md:space-x-8 text-gray-700 font-medium">
-          <li>
+          {/* ✅ Hide "Add Restaurant" on mobile */}
+          <li className="hidden md:block">
             <Link href="/restaurant" className="hover:text-green-500 transition">
               Add Restaurant
             </Link>
           </li>
+
           <li>
             <Link href="/deliverypartner" className="hover:text-green-500 transition">
               Delivery Partner

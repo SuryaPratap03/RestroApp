@@ -133,7 +133,7 @@ export default function Home() {
             {/* Dish Input */}
             <input
               type="text"
-              placeholder="Enter Dish Name"
+              placeholder="Enter Restaurant Name"
               value={restaurant}
               onChange={handleRestaurantChange}
               className="w-2/3 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition -ml-px rounded-r-full"

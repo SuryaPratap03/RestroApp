@@ -8,7 +8,7 @@ const CustomerHeaders = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const router = useRouter();
-  
+
   const [user, setUser] = useState(null);
 
   // ✅ Load user on client side only
@@ -29,15 +29,16 @@ const CustomerHeaders = () => {
 
   return (
     <header className="bg-white shadow-md py-4 px-6 md:px-10 flex items-center justify-between">
+      
       {/* Logo Section */}
       <Link href="/">
-      <div className="flex items-center space-x-3">
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmkZOIVSe9nrgzU0pjJn1pfro9Esus1q4unw&s"
-          alt="Restaurant Logo"
-          className="w-14 h-14 rounded-full object-cover"
-        />
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+        <div className="flex items-center space-x-3">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmkZOIVSe9nrgzU0pjJn1pfro9Esus1q4unw&s"
+            alt="Restaurant Logo"
+            className="w-14 h-14 rounded-full object-cover"
+          />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
             Restro App
           </h1>
         </div>
@@ -46,7 +47,8 @@ const CustomerHeaders = () => {
       {/* Navigation Menu */}
       <nav>
         <ul className="flex space-x-6 md:space-x-8 text-gray-700 font-medium">
-          <li>
+          {/* ✅ Hide "Add Restaurant" on mobile */}
+          <li className="hidden md:block">
             <Link href="/restaurant" className="hover:text-green-500 transition">
               Add Restaurant
             </Link>
